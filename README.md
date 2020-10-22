@@ -1,2 +1,2 @@
-# Push_block_robot
-A robot designed to compete in block pushing game based on Arduino
+# 推方块比赛自动机器人
+这是一个基于Arduino的全自动小机器人，用于参加2020下半年的BIT机器人推方块比赛。
