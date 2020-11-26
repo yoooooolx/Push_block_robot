@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "D:\\Data\\Documents\\Arduino\\libraries\\AutoPID",
+                "D:\\ProgramFiles\\ArduinoIDE\\tools\\**",
+                "D:\\ProgramFiles\\ArduinoIDE\\hardware\\arduino\\avr\\**",
+                "D:\\ProgramFiles\\mingw-w64\\x86_64-8.1.0-win32-seh-rt_v6-rev0\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\8.1.0\\include\\c++"
+            ],
+            "forcedInclude": [
+                "D:\\ProgramFiles\\ArduinoIDE\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
+            ],
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "D:\\ProgramFiles\\mingw-w64\\x86_64-8.1.0-win32-seh-rt_v6-rev0\\mingw64\\bin\\gcc.exe",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14"
+        }
+    ],
+    "version": 4
+}
