@@ -1,7 +1,7 @@
 /*
  * @Author: 尹云可
  * @Date: 2020-11-12 13:59:59
- * @LastEditTime: 2020-11-26 11:53:38
+ * @LastEditTime: 2020-11-28 12:03:22
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \Scripts\MotorControlTest.ino
@@ -10,7 +10,6 @@
 //引用的库
 #include <TimerOne.h>
 #include <AutoPID.h>
-#include <string>
 
 //计数器的值
 volatile long counter_valL0 = 0;
@@ -76,8 +75,8 @@ enum motionStat
 #define IDLE 5
 
 //换算系数
-float straightFactor = 1; //前进/后退时的速度换算为0~255的PWM输入
-float rotationFactor = 1; //左转/右转时的速度换算为0~255的PWM输入
+float straightFactor = 1; //前进/后退时的速度换算为0~255的PWM输入。乘以此factor即为把m/s转换为rpm
+float rotationFactor = 1; //左转/右转时的速度换算为0~255的PWM输入。乘以此factor即为把m/s转换为rpm
 
 //左右电机正反转，true为正转
 volatile int motorDirectionL = 0;
@@ -105,7 +104,7 @@ void setup()
      attachInterrupt(4, counterR0, RISING); //设置编码器A相位上升沿中断
      attachInterrupt(5, counterR1, RISING); //设置编码器B相位上升沿中断
 
-     Timer1.initialize(50000);         // 设置定时器中断时间，单位微秒 ，这里是50毫秒
+     Timer1.initialize(200000);         // 设置定时器中断时间，单位微秒 ，这里是200毫秒
      Timer1.attachInterrupt(timerIsr); // 打开定时器中断
 
      interrupts(); //打开外部中断
@@ -117,25 +116,18 @@ void setup()
 //Loop函数
 void loop()
 {
-
-     digitalWrite(6, HIGH);
-     digitalWrite(4, HIGH);
-     digitalWrite(5, LOW); //正转
-     delay(3000);
-     digitalWrite(4, LOW);
-     analogWrite(5, 200); //稍慢反转
-     delay(3000);
-     analogWrite(4, 100);
-     digitalWrite(5, LOW); //慢正转
-     delay(3000);
-     digitalWrite(4, LOW);
-     digitalWrite(5, LOW); //刹车
-     delay(3000);
-     digitalWrite(6, LOW); //自由转动
-     delay(3000);
-
-     //写入电机值
-     motorWrite();
+     motionControl(FORWARD, 200);
+     delay(5000);
+     motionControl(BACK, 150);
+     delay(5000);
+     motionControl(STOP, 0);
+     delay(2000);
+     motionControl(LEFT, 500);
+     delay(5000);
+     motionControl(RIGHT, 50);
+     delay(5000);
+     motionControl(IDLE, 0);
+     delay(5000);
 }
 
 //外部中断处理函数
@@ -144,56 +136,63 @@ void loop()
 当B相在上升沿时，若A相为1，则为顺时针旋转；若A相为0，则为逆时针旋转
 ******************************************************************/
 
-void counterL0()      //左轮电机A相上升沿输入
+void counterL0() //左轮电机A相上升沿输入
 {
-     counter_valL0+=1; //每一个中断加一
+     counter_valL0 += 1; //每一个中断加一
 }
-void counterL1()      //左轮电机B相上升沿输入
+void counterL1() //左轮电机B相上升沿输入
 {
      //此时若A相为1，则为顺时针转动，即正转
-     if (digitalRead(21)==1)
+     if (digitalRead(21) == 1)
      {
-          motorDirectionL=1;
+          motorDirectionL = 1;
      }
      else
      {
-          motorDirectionL=-1;
+          motorDirectionL = -1;
      }
-     counter_valL1+=motorDirectionL; //每一个中断加一
+     counter_valL1 += motorDirectionL; //每一个中断加一
 }
 
-void counterR0()      //右轮电机A相上升沿输入
+void counterR0() //右轮电机A相上升沿输入
 {
-     counter_valR0+=1; //每一个中断加一
+     counter_valR0 += 1; //每一个中断加一
 }
-void counterR1()      //右轮电机B相上升沿输入
+void counterR1() //右轮电机B相上升沿输入
 {
      //此时若A相为1，则为顺时针转动，即反转
-     if (digitalRead(19)==1)
+     if (digitalRead(19) == 1)
      {
-          motorDirectionR=-1;
+          motorDirectionR = -1;
      }
      else
      {
-          motorDirectionR=1;
+          motorDirectionR = 1;
      }
-     counter_valR1+=motorDirectionR; //每一个中断加一
+     counter_valR1 += motorDirectionR; //每一个中断加一
 }
 
 //定时器中断处理函数
 void timerIsr()
 {
-     inputSpeedLeft = 60 * 20 * counter_valL1 / 150.0; //这里的单位是转每分钟：rpm
-     Serial.println("左轮当前的速度是：" + to_string(inputSpeedLeft) + "rpm");
+     inputSpeedLeft = 60 * 20 * counter_valL1 / 600.0; //这里的单位是转每分钟：rpm
+     Serial.print("左轮当前的速度是：");
+     Serial.print(inputSpeedLeft);
+     Serial.println("rpm");
      counter_valL0 = 0;
      counter_valL1 = 0; //清空该时间段内的脉冲数
 
-     inputSpeedRight = 60 * 20 * counter_valR1 / 150.0; //这里的单位是转每分钟：rpm
-     Serial.println("右轮当前的速度是：" + to_string(inputSpeedRight) + "rpm");
+     inputSpeedRight = 60 * 20 * counter_valR1 / 600.0; //这里的单位是转每分钟：rpm
+     Serial.print("右轮当前的速度是：");
+     Serial.print(inputSpeedRight);
+     Serial.println("rpm");
      counter_valR0 = 0;
      counter_valR1 = 0; //清空该时间段内的脉冲数
 
      //counter_valL0和counter_valR0检测的是轮子的速率，暂时用不到
+
+     //尝试进行一次PID计算
+     motorWrite();
 }
 
 //控制电机
@@ -252,9 +251,9 @@ void motorWrite()
 }
 
 //控制运动
-void motionControl(int _motionStatus, double _velocity)
+void motionControl(int _motionStatus, double _velocity) //_velocity为想要的实际速度，单位m/s
 {
-     switch (_motionStatus)
+     switch (_motionStatus) //speedLeft和speedRight单位是rpm
      {
      case FORWARD: //以给定速度前进
           motionStatus = forward;
