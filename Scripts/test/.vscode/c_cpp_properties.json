@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "D:\\ProgramFiles\\ArduinoIDE\\tools\\**",
+                "D:\\Data\\Documents\\Arduino\\libraries\\**",
+                "D:\\ProgramFiles\\ArduinoIDE\\libraries\\**",
+                "D:\\ProgramFiles\\ArduinoIDE\\hardware\\tools\\**",
+                "D:\\ProgramFiles\\ArduinoIDE\\hardware\\arduino\\avr\\**"
+            ],
+            "forcedInclude": [
+                "D:\\ProgramFiles\\ArduinoIDE\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
+            ],
+            "defines": [
+                "USBCON"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "compilerPath": "D:\\ProgramFiles\\mingw-w64\\x86_64-8.1.0-win32-seh-rt_v6-rev0\\mingw64\\bin\\gcc.exe",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14"
+        }
+    ],
+    "version": 4
+}

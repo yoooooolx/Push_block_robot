@@ -2,7 +2,7 @@
  * @Author: 尹云可
  * @Date: 2020-11-26 11:35:37
  * @LastEditors: 尹云可
- * @LastEditTime: 2020-12-11 16:41:51
+ * @LastEditTime: 2021-01-10 14:57:18
  * @FilePath: \Scripts\MotorControlTest.ino
  * @Description:推方块机器人的主代码
  */
@@ -25,7 +25,8 @@ volatile long counter_valR1 = 0; //该变量用于存储编码器的值，所以
 #define ENB 7
 #define INB1 8
 #define INB2 9
-//左轮AB相为21、20口，右轮AB相为19、18口
+//左轮AB相为3、2口，右轮AB相为19、18口
+//20、21为总线口（SCL、SDA）
 
 //电机的两个EN口的状态
 bool EN1 = true;
@@ -86,8 +87,8 @@ volatile int motorDirectionR = 0;
 void setup()
 {
      //delay(2000);
-     pinMode(21, INPUT);
-     pinMode(20, INPUT); //设置为输入模式，并且21,20号引脚是中断口2,3；用于左轮
+     pinMode(3, INPUT);
+     pinMode(2, INPUT); //设置为输入模式，并且3,2号引脚是中断口2,3；用于左轮
      pinMode(19, INPUT);
      pinMode(18, INPUT); //设置为输入模式，并且19,18号引脚是中断口4,5；用于右轮
 
@@ -147,7 +148,7 @@ void counterL0() //左轮电机A相上升沿输入
 void counterL1() //左轮电机B相上升沿输入
 {
      //此时若A相为1，则为顺时针转动，即正转
-     if (digitalRead(21) == 1)
+     if (digitalRead(3) == 1)
      {
           motorDirectionL = -1;
      }
