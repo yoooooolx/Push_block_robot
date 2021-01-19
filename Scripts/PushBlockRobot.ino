@@ -2,7 +2,7 @@
  * @Author: 尹云可
  * @Date: 2021-01-10 15:17:28
  * @LastEditors: 尹云可
- * @LastEditTime: 2021-01-17 16:04:55
+ * @LastEditTime: 2021-01-17 17:47:49
  * @FilePath: \Scripts\PushBlockRobot.ino
  * @Description:机器人的主控制程序
  */
@@ -148,13 +148,18 @@ void setup()
     leftWheelPID.setTimeStep(500);
     rightWheelPID.setTimeStep(500);
     */
+
+    //预热电机
+    digitalWrite(ENA, LOW);
+    digitalWrite(ENB, LOW);
+    delay(1000);
 }
 
 //Loop函数
 void loop()
 {
     motionControl(FORWARD);
-    delay(3000);
+    delay(2000);
     motionControl(STOP);
     delay(500);
     motionControl(RIGHT);
@@ -162,9 +167,11 @@ void loop()
     motionControl(STOP);
     delay(500);
     motionControl(FORWARD);
-    delay(4000);
+    delay(2000);
     motionControl(STOP);
     delay(10000);
+    /*motionControl(FORWARD);
+    while (1);*/
 }
 
 //外部中断处理函数
@@ -441,72 +448,182 @@ void motionControl(int _motionStatus, double _velocity) //_velocity为想要的�
     motorWrite();
 }
 */
+/*
 //控制运动
 void motionControl(int _motionStatus)
 {
     switch (_motionStatus)
     {
     case FORWARD:
+        //左轮关闭
+        digitalWrite(ENA, LOW);
+        //右轮关闭
+        digitalWrite(ENB, LOW);
         //左轮正转
-        digitalWrite(ENA, HIGH);
         digitalWrite(INA1, HIGH);
         digitalWrite(INA2, LOW);
         //右轮正转
-        digitalWrite(ENB, HIGH);
         digitalWrite(INB1, HIGH);
         digitalWrite(INB2, LOW);
+        //左轮使能
+        digitalWrite(ENA, HIGH);
+        //右轮使能
+        digitalWrite(ENB, HIGH);
+        break;
+
+    case BACK:
+        //左轮关闭
+        digitalWrite(ENA, LOW);
+        //右轮关闭
+        digitalWrite(ENB, LOW);
+        //左轮反转
+        digitalWrite(INA1, LOW);
+        digitalWrite(INA2, HIGH);
+        //右轮反转
+        digitalWrite(INB1, LOW);
+        digitalWrite(INB2, HIGH);
+        //左轮使能
+        digitalWrite(ENA, HIGH);
+        //右轮使能
+        digitalWrite(ENB, HIGH);
+        break;
+
+    case LEFT:
+        //左轮关闭
+        digitalWrite(ENA, LOW);
+        //右轮关闭
+        digitalWrite(ENB, LOW);
+        //左轮反转
+        digitalWrite(INA1, LOW);
+        digitalWrite(INA2, HIGH);
+        //右轮正转
+        digitalWrite(INB1, HIGH);
+        digitalWrite(INB2, LOW);
+        //左轮使能
+        digitalWrite(ENA, HIGH);
+        //右轮使能
+        digitalWrite(ENB, HIGH);
+        break;
+
+    case RIGHT:
+        //左轮关闭
+        digitalWrite(ENA, LOW);
+        //右轮关闭
+        digitalWrite(ENB, LOW);
+        //左轮正转
+        digitalWrite(INA1, HIGH);
+        digitalWrite(INA2, LOW);
+        //右轮反转
+        digitalWrite(INB1, LOW);
+        digitalWrite(INB2, HIGH);
+        //左轮使能
+        digitalWrite(ENA, HIGH);
+        //右轮使能
+        digitalWrite(ENB, HIGH);
+        break;
+
+    case STOP:
+        //左轮关闭
+        digitalWrite(ENA, LOW);
+        //右轮关闭
+        digitalWrite(ENB, LOW);
+        //左轮刹车
+        digitalWrite(INA1, LOW);
+        digitalWrite(INA2, LOW);
+        //右轮刹车
+        digitalWrite(INB1, LOW);
+        digitalWrite(INB2, LOW);
+        //左轮使能
+        digitalWrite(ENA, HIGH);
+        //右轮使能
+        digitalWrite(ENB, HIGH);
+        break;
+
+    case IDLE:
+        //左轮关闭
+        digitalWrite(ENA, LOW);
+        //右轮关闭
+        digitalWrite(ENB, LOW);
+        //左轮刹车
+        digitalWrite(INA1, LOW);
+        digitalWrite(INA2, LOW);
+        //右轮刹车
+        digitalWrite(INB1, LOW);
+        digitalWrite(INB2, LOW);
+        break;
+
+    default:
+        break;
+    }
+}
+*/
+
+//控制运动，转弯角速度约为90°/s
+void motionControl(int _motionStatus)
+{
+    switch (_motionStatus)
+    {
+    case FORWARD:
+        //左轮正转
+        digitalWrite(INA1, HIGH);
+        digitalWrite(INA2, LOW);
+        digitalWrite(ENA, HIGH);
+        //右轮正转
+        digitalWrite(INB1, HIGH);
+        digitalWrite(INB2, LOW);
+        digitalWrite(ENB, HIGH);
         break;
 
     case BACK:
         //左轮反转
-        digitalWrite(ENA, HIGH);
         digitalWrite(INA1, LOW);
         digitalWrite(INA2, HIGH);
+        digitalWrite(ENA, HIGH);
         //右轮反转
-        digitalWrite(ENB, HIGH);
         digitalWrite(INB1, LOW);
         digitalWrite(INB2, HIGH);
+        digitalWrite(ENB, HIGH);
         break;
 
     case LEFT:
         //左轮反转
-        digitalWrite(ENA, HIGH);
         digitalWrite(INA1, LOW);
         digitalWrite(INA2, HIGH);
+        digitalWrite(ENA, HIGH);
         //右轮正转
-        digitalWrite(ENB, HIGH);
         digitalWrite(INB1, HIGH);
         digitalWrite(INB2, LOW);
+        digitalWrite(ENB, HIGH);
         break;
 
     case RIGHT:
         //左轮正转
-        digitalWrite(ENA, HIGH);
         digitalWrite(INA1, HIGH);
         digitalWrite(INA2, LOW);
+        digitalWrite(ENA, HIGH);
         //右轮反转
-        digitalWrite(ENB, HIGH);
         digitalWrite(INB1, LOW);
         digitalWrite(INB2, HIGH);
+        digitalWrite(ENB, HIGH);
         break;
 
     case STOP:
         //左轮刹车
+        digitalWrite(INA1, LOW);
+        digitalWrite(INA2, LOW);
         digitalWrite(ENA, HIGH);
-        digitalWrite(INA1, HIGH);
-        digitalWrite(INA2, HIGH);
         //右轮刹车
+        digitalWrite(INB1, LOW);
+        digitalWrite(INB2, LOW);
         digitalWrite(ENB, HIGH);
-        digitalWrite(INB1, HIGH);
-        digitalWrite(INB2, HIGH);
         break;
 
     case IDLE:
-        //左轮自由
+        //左轮刹车
         digitalWrite(ENA, LOW);
         digitalWrite(INA1, LOW);
         digitalWrite(INA2, LOW);
-        //右轮自由
+        //右轮刹车
         digitalWrite(ENB, LOW);
         digitalWrite(INB1, LOW);
         digitalWrite(INB2, LOW);
